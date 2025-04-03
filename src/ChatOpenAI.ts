@@ -38,6 +38,7 @@ export default class ChatOpenAI {
         });
         let content = "";
         let toolCalls: ToolCall[] = [];
+        console.log('==================== RESPONSE ====================');
         for await (const chunk of stream) {
             const delta = chunk.choices[0].delta;
             // 处理普通Content
@@ -60,7 +61,7 @@ export default class ChatOpenAI {
                 }
             }
         }
-        if (content !== "") this.messages.push({ role: "assistant", content: content });
+        this.messages.push({ role: "assistant", content: content, tool_calls: toolCalls.map(call => ({ id: call.id, type: "function", function: call.function })) });
         return {
             content: content,
             toolCalls: toolCalls,
@@ -71,7 +72,7 @@ export default class ChatOpenAI {
         this.messages.push({
             role: "tool",
             content: toolOutput,
-            tool_call_id: toolCallId,
+            tool_call_id: toolCallId
         });
     }
 
