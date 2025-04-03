@@ -31,7 +31,6 @@ export default class Agent {
 
     async invoke(prompt: string) {
         if (!this.llm) throw new Error('Agent not initialized');
-        logTitle('CHAT');
         let response = await this.llm.chat(prompt);
         while (true) {
             if (response.toolCalls.length > 0) {

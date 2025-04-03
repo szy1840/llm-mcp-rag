@@ -28,6 +28,7 @@ export default class ChatOpenAI {
     }
 
     async chat(prompt?: string): Promise<{ content: string, toolCalls: ToolCall[] }> {
+        logTitle('CHAT');
         if (prompt) {
             this.messages.push({ role: "user", content: prompt });
         }
