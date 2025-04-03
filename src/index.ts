@@ -13,7 +13,7 @@ const fetchMCP = new MCPClient("mcp-server-fetch", "uvx", ['mcp-server-fetch']);
 const fileMCP = new MCPClient("mcp-server-file", "npx", ['-y', '@modelcontextprotocol/server-filesystem', outPath]);
 
 async function main() {
-    const agent = new Agent([fetchMCP, fileMCP], 'gpt-4o-mini', 'You are a helpful assistant.');
+    const agent = new Agent('gpt-4o-mini', [fetchMCP, fileMCP]);
     await agent.init();
     await agent.invoke(TASK);
     await agent.close();

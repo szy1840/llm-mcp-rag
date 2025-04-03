@@ -8,7 +8,7 @@ export default class Agent {
     private model: string;
     private systemPrompt: string;
 
-    constructor(mcpClients: MCPClient[], model: string, systemPrompt?: string) {
+    constructor(model: string, mcpClients: MCPClient[], systemPrompt?: string) {
         this.mcpClients = mcpClients;
         this.model = model;
         this.systemPrompt = systemPrompt || '';
