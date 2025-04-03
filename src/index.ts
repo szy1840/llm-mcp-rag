@@ -3,7 +3,7 @@ import Agent from "./Agent";
 import path from "path";
 
 const URL = 'https://news.ycombinator.com/'
-const outPath = path.join(process.cwd(), 'src');
+const outPath = path.join(process.cwd(), 'output');
 const TASK = `
 Summarize the content of ${URL} and save it as a markdown file to ${outPath}.
 You can choose the file name.
