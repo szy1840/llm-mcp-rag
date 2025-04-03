@@ -14,17 +14,15 @@ export default class ChatOpenAI {
     private llm: OpenAI;
     private model: string;
     private messages: OpenAI.Chat.ChatCompletionMessageParam[];
-    private log: boolean;
     private tools: Tool[];
 
-    constructor(model: string, systemPrompt?: string, tools?: Tool[], log?: boolean) {
+    constructor(model: string, systemPrompt?: string, tools?: Tool[]) {
         this.llm = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY,
             baseURL: process.env.OPENAI_BASE_URL,
         });
         this.model = model;
         this.messages = systemPrompt ? [{ role: "system", content: systemPrompt }] : [];
-        this.log = log || false;
         this.tools = tools || [];
     }
 
@@ -45,8 +43,8 @@ export default class ChatOpenAI {
             // 处理普通Content
             if (delta.content) {
                 const contentChunk = chunk.choices[0].delta.content || "";
-                if (this.log) process.stdout.write(contentChunk);
                 content += contentChunk;
+                process.stdout.write(contentChunk);
             }
             // 处理ToolCall
             if (delta.tool_calls) {
