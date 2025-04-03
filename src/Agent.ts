@@ -1,5 +1,6 @@
 import MCPClient from "./MCPClient";
 import ChatOpenAI from "./ChatOpenAI";
+import { logTitle } from "./utils";
 
 export default class Agent {
     private mcpClients: MCPClient[];
@@ -14,7 +15,7 @@ export default class Agent {
     }
 
     async init() {
-        console.log('==================== TOOLS ====================');
+        logTitle('TOOLS');
         for await (const client of this.mcpClients) {
             await client.init();
         }
@@ -30,14 +31,14 @@ export default class Agent {
 
     async invoke(prompt: string) {
         if (!this.llm) throw new Error('Agent not initialized');
-        console.log('==================== CHAT ====================');
+        logTitle('CHAT');
         let response = await this.llm.chat(prompt);
         while (true) {
             if (response.toolCalls.length > 0) {
                 for (const toolCall of response.toolCalls) {
-                    const mcp = this.mcpClients.find(client => client.getTools().some(t => t.name === toolCall.function.name));
+                    const mcp = this.mcpClients.find(client => client.getTools().some((t: any) => t.name === toolCall.function.name));
                     if (mcp) {
-                        console.log('==================== TOOL USE ====================');
+                        logTitle(`TOOL USE`);
                         console.log(`Calling tool: ${toolCall.function.name}`);
                         console.log(`Arguments: ${toolCall.function.arguments}`);
                         const result = await mcp.callTool(toolCall.function.name, JSON.parse(toolCall.function.arguments));

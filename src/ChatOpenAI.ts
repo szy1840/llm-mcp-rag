@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { Tool } from "@modelcontextprotocol/sdk/types.js";
 import 'dotenv/config'
+import { logTitle } from "./utils";
 
 export interface ToolCall {
     id: string;
@@ -38,7 +39,7 @@ export default class ChatOpenAI {
         });
         let content = "";
         let toolCalls: ToolCall[] = [];
-        console.log('==================== RESPONSE ====================');
+        logTitle('RESPONSE');
         for await (const chunk of stream) {
             const delta = chunk.choices[0].delta;
             // 处理普通Content
