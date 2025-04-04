@@ -7,11 +7,13 @@ export default class Agent {
     private llm: ChatOpenAI | null = null;
     private model: string;
     private systemPrompt: string;
+    private context: string;
 
-    constructor(model: string, mcpClients: MCPClient[], systemPrompt?: string) {
+    constructor(model: string, mcpClients: MCPClient[], systemPrompt: string = '', context: string = '') {
         this.mcpClients = mcpClients;
         this.model = model;
-        this.systemPrompt = systemPrompt || '';
+        this.systemPrompt = systemPrompt;
+        this.context = context;
     }
 
     async init() {
@@ -20,7 +22,7 @@ export default class Agent {
             await client.init();
         }
         const tools = this.mcpClients.flatMap(client => client.getTools());
-        this.llm = new ChatOpenAI(this.model, this.systemPrompt, tools);
+        this.llm = new ChatOpenAI(this.model, this.systemPrompt, tools, this.context);
     }
 
     async close() {

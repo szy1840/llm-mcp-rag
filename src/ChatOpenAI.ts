@@ -14,17 +14,18 @@ export interface ToolCall {
 export default class ChatOpenAI {
     private llm: OpenAI;
     private model: string;
-    private messages: OpenAI.Chat.ChatCompletionMessageParam[];
+    private messages: OpenAI.Chat.ChatCompletionMessageParam[] = [];
     private tools: Tool[];
 
-    constructor(model: string, systemPrompt?: string, tools?: Tool[]) {
+    constructor(model: string, systemPrompt: string = '', tools: Tool[] = [], context: string = '') {
         this.llm = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY,
             baseURL: process.env.OPENAI_BASE_URL,
         });
         this.model = model;
-        this.messages = systemPrompt ? [{ role: "system", content: systemPrompt }] : [];
-        this.tools = tools || [];
+        this.tools = tools;
+        if (systemPrompt) this.messages.push({ role: "system", content: systemPrompt });
+        if (context) this.messages.push({ role: "user", content: context });
     }
 
     async chat(prompt?: string): Promise<{ content: string, toolCalls: ToolCall[] }> {
