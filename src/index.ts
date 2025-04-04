@@ -15,18 +15,20 @@ const TASK = `
 const fetchMCP = new MCPClient("mcp-server-fetch", "uvx", ['mcp-server-fetch']);
 const fileMCP = new MCPClient("mcp-server-file", "npx", ['-y', '@modelcontextprotocol/server-filesystem', outPath]);
 
-const embeddingRetriever = new EmbeddingRetriever("BAAI/bge-m3");
-const knowledgeDir = path.join(process.cwd(), 'knowledge');
-const files = fs.readdirSync(knowledgeDir);
-files.forEach(async (file) => {
-    const content = fs.readFileSync(path.join(knowledgeDir, file), 'utf-8');
-    await embeddingRetriever.embedDocument(content);
-});
-const context = (await embeddingRetriever.retrieve(TASK, 3)).join('\n');
-logTitle('CONTEXT');
-console.log(context);
-
 async function main() {
+    // RAG
+    const embeddingRetriever = new EmbeddingRetriever("BAAI/bge-m3");
+    const knowledgeDir = path.join(process.cwd(), 'knowledge');
+    const files = fs.readdirSync(knowledgeDir);
+    for await (const file of files) {
+        const content = fs.readFileSync(path.join(knowledgeDir, file), 'utf-8');
+        await embeddingRetriever.embedDocument(content);
+    }
+    const context = (await embeddingRetriever.retrieve(TASK, 3)).join('\n');
+    logTitle('CONTEXT');
+    console.log(context);
+
+    // Agent
     const agent = new Agent('gpt-4o-mini', [fetchMCP, fileMCP], '', context);
     await agent.init();
     await agent.invoke(TASK);

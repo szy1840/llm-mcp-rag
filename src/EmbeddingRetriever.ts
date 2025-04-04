@@ -38,6 +38,7 @@ export default class EmbeddingRetriever {
             }),
         });
         const data = await response.json();
+        console.log(data.data[0].embedding);
         return data.data[0].embedding;
     }
 
