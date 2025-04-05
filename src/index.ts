@@ -29,7 +29,7 @@ async function main() {
     console.log(context);
 
     // Agent
-    const agent = new Agent('gpt-4o-mini', [fetchMCP, fileMCP], '', context);
+    const agent = new Agent('openai/gpt-4o-mini', [fetchMCP, fileMCP], '', context);
     await agent.init();
     await agent.invoke(TASK);
     await agent.close();
