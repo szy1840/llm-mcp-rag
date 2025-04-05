@@ -17,6 +17,19 @@ const fileMCP = new MCPClient("mcp-server-file", "npx", ['-y', '@modelcontextpro
 
 async function main() {
     // RAG
+    const context = await retrieveContext();
+
+    // Agent
+    const agent = new Agent('openai/gpt-4o-mini', [fetchMCP, fileMCP], '', context);
+    await agent.init();
+    await agent.invoke(TASK);
+    await agent.close();
+}
+
+main()
+
+async function retrieveContext() {
+    // RAG
     const embeddingRetriever = new EmbeddingRetriever("BAAI/bge-m3");
     const knowledgeDir = path.join(process.cwd(), 'knowledge');
     const files = fs.readdirSync(knowledgeDir);
@@ -27,12 +40,5 @@ async function main() {
     const context = (await embeddingRetriever.retrieve(TASK, 3)).join('\n');
     logTitle('CONTEXT');
     console.log(context);
-
-    // Agent
-    const agent = new Agent('openai/gpt-4o-mini', [fetchMCP, fileMCP], '', context);
-    await agent.init();
-    await agent.invoke(TASK);
-    await agent.close();
+    return context
 }
-
-main()

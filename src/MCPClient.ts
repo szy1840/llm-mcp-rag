@@ -27,7 +27,6 @@ export default class MCPClient {
         return this.tools;
     }
 
-
     public callTool(name: string, params: Record<string, any>) {
         return this.mcp.callTool({
             name,
