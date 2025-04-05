@@ -55,7 +55,7 @@ export default class ChatOpenAI {
                 for (const toolCallChunk of delta.tool_calls) {
                     // 第一次要创建一个toolCall
                     if (toolCalls.length <= toolCallChunk.index) {
-                        toolCalls.push({ id: toolCallChunk.index.toString(), function: { name: '', arguments: '' } });
+                        toolCalls.push({ id: '', function: { name: '', arguments: '' } });
                     }
                     let currentCall = toolCalls[toolCallChunk.index];
                     if (toolCallChunk.id) currentCall.id += toolCallChunk.id;
