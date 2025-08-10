@@ -33,6 +33,9 @@ export default class ChatOpenAI {
         if (prompt) {
             this.messages.push({ role: "user", content: prompt });
         }
+        // 每次调用都要传输完整的 messages 历史，因为 OpenAI 设计它不会在服务器维护历史消息。
+        // 可能的优化方法是：消息压缩，设置消息数量上限（slice掉旧消息）
+        // LangChain 使用 Memory 组件来管理历史：ConversationSummaryMemory, ConversationBufferWindowMemory
         const stream = await this.llm.chat.completions.create({
             model: this.model,
             messages: this.messages,
@@ -58,12 +61,15 @@ export default class ChatOpenAI {
                         toolCalls.push({ id: '', function: { name: '', arguments: '' } });
                     }
                     let currentCall = toolCalls[toolCallChunk.index];
+                    // 流式响应的 tool call 的 id, name, arguments 是分开的，需要拼接起来
+                    // 增量累积，所以用字符串拼接
                     if (toolCallChunk.id) currentCall.id += toolCallChunk.id;
                     if (toolCallChunk.function?.name) currentCall.function.name += toolCallChunk.function.name;
                     if (toolCallChunk.function?.arguments) currentCall.function.arguments += toolCallChunk.function.arguments;
                 }
             }
         }
+        // 将流式的响应拼接出本次完整的响应，并自己添加到 messages 里
         this.messages.push({ role: "assistant", content: content, tool_calls: toolCalls.map(call => ({ id: call.id, type: "function", function: call.function })) });
         return {
             content: content,
